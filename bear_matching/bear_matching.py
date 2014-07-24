@@ -25,10 +25,12 @@ def matching_bears(filename):
 		name = words_stripped[0].lower()
 		words_stripped[4] = float(words_stripped[4])
 		words_stripped[4] = int(10 * words_stripped[4])
-		if name not in bears_dict.keys():
+		if name not in bears_dict:
 			bears_dict[name] = words_stripped[1:]
-		if name not in parents_dict.keys():
+		if name not in parents_dict:
 			parents_dict[name] = words_stripped[2:4]
+
+	file_text.close()
 
 	for bear in bears_dict:
 		mother = parents_dict[bear][0]
@@ -42,16 +44,13 @@ def matching_bears(filename):
 		try:
 			grandparents_dict[bear] = [parents_dict[mother][0], parents_dict[mother][1], parents_dict[father][0], parents_dict[father][1]]
 		except:
-			if father not in parents_dict.keys() and mother not in parents_dict.keys():
-				grandparents_dict[bear] = ['nil','nil','nil','nil']
-			elif mother not in parents_dict.keys():
-				grandparents_dict[bear] = ['nil','nil',parents_dict[father][0],parents_dict[father][1]]
-			elif father not in parents_dict.keys():
-				grandparents_dict[bear] = [parents_dict[mother][0],parents_dict[mother][1],'nil','nil']
+			if father not in parents_dict and mother not in parents_dict:
+				grandparents_dict[bear] = []
+			elif mother not in parents_dict:
+				grandparents_dict[bear] = [parents_dict[father][0],parents_dict[father][1]]
+			elif father not in parents_dict:
+				grandparents_dict[bear] = [parents_dict[mother][0],parents_dict[mother][1]]
 
-	file_text.close()
-
-	for bear in parents_dict:
 		fam_dict[bear] = parents_dict[bear] + grandparents_dict[bear]
 
 	gender_combinations = list(product(female_bears, male_bears))
@@ -72,7 +71,7 @@ def matching_bears(filename):
 
 	for i in range(6):
 		for pair in gender_combinations[:]:
-			if fam_dict[pair[0]] != 6*['nil']:
+			if len(fam_dict[pair[0]]) >= 4 and len(fam_dict[pair[1]]) >= 4:
 				if fam_dict[pair[0]][i] in fam_dict[pair[1]]:
 					gender_combinations.remove(pair)
 						
